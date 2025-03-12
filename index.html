@@ -3,42 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Game</title>
+    <title>Dodge the Ball Game</title>
     <style>
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            background-color: lightblue;
+            background-color: lightgray;
         }
         h1 {
             color: darkblue;
         }
-        #score {
-            font-size: 24px;
-            font-weight: bold;
+        #gameArea {
+            width: 300px;
+            height: 400px;
+            background-color: white;
+            border: 2px solid black;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
         }
-        button {
-            font-size: 20px;
-            padding: 10px 20px;
+        #player {
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+            position: absolute;
+            bottom: 10px;
+            left: 125px;
+        }
+        .ball {
+            width: 30px;
+            height: 30px;
             background-color: red;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
+            position: absolute;
+            border-radius: 50%;
         }
     </style>
 </head>
 <body>
-    <h1>Click the Button Game</h1>
-    <p>Score: <span id="score">0</span></p>
-    <button onclick="increaseScore()">Click Me!</button>
-
+    <h1>Dodge the Ball Game</h1>
+    <p>Use **arrow keys** to move left & right!</p>
+    <div id="gameArea">
+        <div id="player"></div>
+    </div>
     <script>
-        let score = 0;
-        function increaseScore() {
-            score++;
-            document.getElementById("score").innerText = score;
+        let player = document.getElementById("player");
+        let gameArea = document.getElementById("gameArea");
+        let playerX = 125;
+        let gameOver = false;
+
+        // Move the player left & right
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "ArrowLeft" && playerX > 0) {
+                playerX -= 20;
+            } else if (event.key === "ArrowRight" && playerX < 250) {
+                playerX += 20;
+            }
+            player.style.left = playerX + "px";
+        });
+
+        function createBall() {
+            if (gameOver) return;
+            let ball = document.createElement("div");
+            ball.classList.add("ball");
+            let ballX = Math.random() * 270;
+            ball.style.left = ballX + "px";
+            ball.style.top = "0px";
+            gameArea.appendChild(ball);
+
+            let ballFall = setInterval(() => {
+                if (gameOver) {
+                    clearInterval(ballFall);
+                    return;
+                }
+                let ballY = parseInt(ball.style.top);
+                ballY += 5;
+                ball.style.top = ballY + "px";
+
+                // Check for collision
+                if (ballY > 350 && ballX > playerX - 30 && ballX < playerX + 50) {
+                    alert("Game Over!");
+                    gameOver = true;
+                    location.reload();
+                }
+
+                // Remove ball if it reaches the bottom
+                if (ballY > 400) {
+                    gameArea.removeChild(ball);
+                    clearInterval(ballFall);
+                }
+            }, 50);
         }
+
+        setInterval(createBall, 1000); // Create a new ball every second
     </script>
 </body>
 </html>
