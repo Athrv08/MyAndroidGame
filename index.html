@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dodge the Ball Game</title>
+    <title>Dodge the Ball (Mobile)</title>
     <style>
         body {
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: lightgray;
+            margin: 0;
         }
         h1 {
             color: darkblue;
         }
         #gameArea {
-            width: 300px;
-            height: 400px;
+            width: 90%;
+            max-width: 400px;
+            height: 500px;
             background-color: white;
             border: 2px solid black;
             position: relative;
@@ -28,7 +30,8 @@
             background-color: blue;
             position: absolute;
             bottom: 10px;
-            left: 125px;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .ball {
             width: 30px;
@@ -37,35 +40,65 @@
             position: absolute;
             border-radius: 50%;
         }
+        #controls {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .btn {
+            width: 100px;
+            height: 50px;
+            font-size: 18px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-    <h1>Dodge the Ball Game</h1>
-    <p>Use **arrow keys** to move left & right!</p>
+    <h1>Dodge the Ball (Mobile)</h1>
+    <p>Tap **Left** or **Right** to move!</p>
+    
     <div id="gameArea">
         <div id="player"></div>
     </div>
+
+    <div id="controls">
+        <button class="btn" id="leftBtn">⬅️ Left</button>
+        <button class="btn" id="rightBtn">➡️ Right</button>
+    </div>
+
     <script>
         let player = document.getElementById("player");
         let gameArea = document.getElementById("gameArea");
-        let playerX = 125;
+        let leftBtn = document.getElementById("leftBtn");
+        let rightBtn = document.getElementById("rightBtn");
+
+        let playerX = gameArea.offsetWidth / 2 - 25;
         let gameOver = false;
 
-        // Move the player left & right
-        document.addEventListener("keydown", function(event) {
-            if (event.key === "ArrowLeft" && playerX > 0) {
+        // Move the player left
+        leftBtn.addEventListener("click", function() {
+            if (playerX > 0) {
                 playerX -= 20;
-            } else if (event.key === "ArrowRight" && playerX < 250) {
-                playerX += 20;
+                player.style.left = playerX + "px";
             }
-            player.style.left = playerX + "px";
+        });
+
+        // Move the player right
+        rightBtn.addEventListener("click", function() {
+            if (playerX < gameArea.offsetWidth - 50) {
+                playerX += 20;
+                player.style.left = playerX + "px";
+            }
         });
 
         function createBall() {
             if (gameOver) return;
             let ball = document.createElement("div");
             ball.classList.add("ball");
-            let ballX = Math.random() * 270;
+            let ballX = Math.random() * (gameArea.offsetWidth - 30);
             ball.style.left = ballX + "px";
             ball.style.top = "0px";
             gameArea.appendChild(ball);
@@ -80,14 +113,14 @@
                 ball.style.top = ballY + "px";
 
                 // Check for collision
-                if (ballY > 350 && ballX > playerX - 30 && ballX < playerX + 50) {
+                if (ballY > 450 && ballX > playerX - 30 && ballX < playerX + 50) {
                     alert("Game Over!");
                     gameOver = true;
                     location.reload();
                 }
 
                 // Remove ball if it reaches the bottom
-                if (ballY > 400) {
+                if (ballY > 500) {
                     gameArea.removeChild(ball);
                     clearInterval(ballFall);
                 }
